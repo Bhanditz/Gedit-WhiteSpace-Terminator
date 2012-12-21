@@ -16,6 +16,7 @@ class WhiteSpaceTerminator(GObject.Object, Gedit.WindowActivatable):
 
     def do_activate(self):
         self.handlers = []
+        self._are_trailing_lines_stripped = True
         handler = self.window.connect("tab-added", self.on_tab_added)
         self.handlers.append((self.window, handler))
         for document in self.window.get_documents():
@@ -28,7 +29,13 @@ class WhiteSpaceTerminator(GObject.Object, Gedit.WindowActivatable):
 
     def on_document_save(self, document, location, encoding, compression,
                          flags, data=None):
-        for i, text in enumerate(document.props.text.rstrip().splitlines()):
+
+        if self._are_trailing_lines_stripped:
+            processed_lines = document.props.text.rstrip().splitlines()
+        else:
+            processed_lines = document.props.text.splitlines()
+
+        for i, text in enumerate(processed_lines):
             strip_stop = document.get_iter_at_line(i)
             strip_stop.forward_to_line_end()
             strip_start = strip_stop.copy()
