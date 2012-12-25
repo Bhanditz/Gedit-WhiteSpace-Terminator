@@ -44,7 +44,12 @@ class WhiteSpaceTerminator(GObject.Object, Gedit.WindowActivatable):
                     print "after:"
                     print processed_lines
             else:
-                processed_lines = document.props.text.rstrip().splitlines()
+                print "removing trailing lines, not keeping last one"
+                lines = document.props.text.splitlines()
+                print lines
+                while (len(lines) > 0) and ((lines[-1].isspace() or (len(lines[-1]) == 0))):
+                    lines.pop()
+                processed_lines = lines
         else:
             processed_lines = document.props.text.splitlines()
 
