@@ -53,11 +53,18 @@ class WhiteSpaceTerminator(GObject.Object, Gedit.WindowActivatable):
         else:
             processed_lines = document.props.text.splitlines()
 
+        print "processed lines:"
+        print processed_lines
+
         for i, text in enumerate(processed_lines):
             strip_stop = document.get_iter_at_line(i)
             strip_stop.forward_to_line_end()
             strip_start = strip_stop.copy()
             strip_start.backward_chars(len(text) - len(text.rstrip()))
+            print "processing line ", i, "text: ", text
+            # print "deleting: ", document.get_text(strip_start, strip_stop, 0)
+            print "line until strip start:"
+            print ("'%s'" % (document.get_text(document.get_iter_at_line(i), strip_start, 0)))
             document.delete(strip_start, strip_stop)
         document.delete(strip_start, document.get_end_iter())
 
