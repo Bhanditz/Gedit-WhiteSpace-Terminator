@@ -17,7 +17,7 @@ class WhiteSpaceTerminator(GObject.Object, Gedit.WindowActivatable):
     def do_activate(self):
         self.handlers = []
         self._are_trailing_lines_stripped = True
-        self._is_last_empty_line_kept = False
+        self._is_last_empty_line_kept = True
         handler = self.window.connect("tab-added", self.on_tab_added)
         self.handlers.append((self.window, handler))
         for document in self.window.get_documents():
@@ -33,16 +33,17 @@ class WhiteSpaceTerminator(GObject.Object, Gedit.WindowActivatable):
 
         if self._are_trailing_lines_stripped:
             if self._is_last_empty_line_kept:
-                processed_lines = document.props.text.rstrip().splitlines()
+                print "removing trailing lines, keeping last one"
+                # processed_lines = document.props.text.splitlines()
                 # if there is a new line in the document, then
                 # add it as the last line to be procesed
                 lines = document.props.text.splitlines()
                 print "lines:"
                 print lines
-                if (len(lines[-1:][0]) == 0) or (lines[-1:][0].isspace()):
-                    processed_lines.append("")
-                    print "after:"
-                    print processed_lines
+
+                while (len(lines) > 1) and ((lines[-2].isspace()) or (len(lines[-2]) == 0)):
+                    lines.pop()
+                processed_lines = lines
             else:
                 print "removing trailing lines, not keeping last one"
                 lines = document.props.text.splitlines()
@@ -56,6 +57,7 @@ class WhiteSpaceTerminator(GObject.Object, Gedit.WindowActivatable):
         print "processed lines:"
         print processed_lines
 
+        strip_start = document.get_end_iter()
         for i, text in enumerate(processed_lines):
             strip_stop = document.get_iter_at_line(i)
             strip_stop.forward_to_line_end()
