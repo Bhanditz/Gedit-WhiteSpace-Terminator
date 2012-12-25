@@ -17,7 +17,7 @@ class WhiteSpaceTerminator(GObject.Object, Gedit.WindowActivatable):
     def do_activate(self):
         self.handlers = []
         self._are_trailing_lines_stripped = True
-        self._is_last_empty_line_kept = True
+        self._is_last_empty_line_kept = False
         handler = self.window.connect("tab-added", self.on_tab_added)
         self.handlers.append((self.window, handler))
         for document in self.window.get_documents():
